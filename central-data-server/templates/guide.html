@@ -1,0 +1,846 @@
+{% extends 'layout.html' %} {% block page_body %}
+<style>
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+	
+</style>
+<article id="3239e4f7-23d5-4a3a-8c74-a05a407d30ab" class="page sans" style="width: 70%; padding-left:10rem;">
+  <header>
+    <div class="page-header-icon undefined">
+      <span class="icon">📖</span>
+    </div>
+    <h1 class="page-title">단어사전 가이드 문서</h1>
+    <h1
+      id="059a3916-930f-438a-8746-6ee9067b704c"
+      class="block-color-orange_background"
+    >
+      단어 사전
+    </h1>
+    <h2 id="5cc30e61-11e8-43e0-b03e-eb77ed43d4a2" class="">명사 탭</h2>
+    <figure id="82beac53-890a-4314-a37c-60fc3826e196" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.51.28.png"
+        ><img
+          style="width: 259px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.51.28.png"
+      /></a>
+    </figure>
+    <p id="edeb12d6-06b7-47d3-8d79-3ea8bd3d6617" class="">
+      명사 탭에서는 단어사전에 추가하고 싶은 명사를 입력한다.
+    </p>
+    <p id="7ecb58c9-345c-4755-9a3b-b1477b87505b" class="">
+      영문 또는 한글 단어를 등록할 수 있다.
+    </p>
+    <figure id="1de97228-4f3d-413c-9993-b01ba26d869d" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.55.33.png"
+        ><img
+          style="width: 1651px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.55.33.png"
+      /></a>
+    </figure>
+    <p id="cfbdccbe-554d-47ee-a878-94de56d8e66c" class="">
+      <code>+추가</code> 버튼을 눌러 단어를 추가할 수 있다.
+    </p>
+    <figure id="6f78600d-4ea1-4e2a-8e93-eab47f470945" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.56.22.png"
+        ><img
+          style="width: 584px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.56.22.png"
+      /></a>
+    </figure>
+    <figure
+      class="block-color-pink_background callout"
+      style="white-space: pre-wrap; display: flex"
+      id="c869ad21-fc58-46c4-aad0-96951c9965d5"
+    >
+      <div style="font-size: 1.5em"><span class="icon">⛔</span></div>
+      <div style="width: 100%">
+        주의사항
+         - 띄어쓰기가 없는 명사만 입력
+         - Updated_Flag는 수정하지 말 것
+      </div>
+    </figure>
+    <div id="d8b9cd44-326c-40a4-b23c-b47c95c31575" class="column-list">
+      <div
+        id="da08febe-2060-4c2f-9225-586e0c0d103d"
+        style="width: 50%"
+        class="column"
+      >
+        <p id="1b1d6e4a-6451-4e84-b093-bad76ada05f4" class="">
+          업데이트가 <code>true</code> 인 경우 사전에 반영된 상태
+        </p>
+        <figure id="04166707-36a3-4d7f-8dac-5f77d0d9bc26" class="image">
+          <a
+            href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.58.01.png"
+            ><img
+              style="width: 141px"
+              src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.58.01.png"
+          /></a>
+        </figure>
+      </div>
+      <div
+        id="b0b43138-8097-4ddf-860c-56fda0a2fcb0"
+        style="width: 50%"
+        class="column"
+      >
+        <p id="07aea58c-0e7f-450b-a961-6840db85dd02" class="">
+          업데이트가 <code>false</code>인 경우 사전에 미반영 상태
+        </p>
+        <figure id="08ce2568-afc5-425e-9a46-b655281e8943" class="image">
+          <a
+            href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.57.45.png"
+            ><img
+              style="width: 137px"
+              src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.57.45.png"
+          /></a>
+        </figure>
+      </div>
+    </div>
+    <p id="1e34bcd1-34c6-458a-a6bb-ea5e4d73bdd1" class="">
+      등록하기전, 이미 등록되어 있는지 검색창에 검색하여 확인할 수 있다.
+    </p>
+    <figure id="15ed2749-1df2-407d-9a13-3153e2aafb8d" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.02.19.png"
+        ><img
+          style="width: 1358px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.02.19.png"
+      /></a>
+    </figure>
+    <p id="0f6fd985-5a32-40fa-afb1-b41e9af80d28" class=""></p>
+    <h2 id="2065a177-ff69-416c-9c5a-2f2501ba4926" class="">형용사 탭</h2>
+    <figure id="5f793e97-cfdf-4ae5-b37e-06d47b59e505" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.01.07.png"
+        ><img
+          style="width: 250px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.01.07.png"
+      /></a>
+    </figure>
+    <p id="2463fcc3-5cc5-4171-b978-b69258466c59" class="">
+      형용사탭은 형용사로 작성되는 단어를 입력한다.
+    </p>
+    <p id="b379d5ba-e509-4540-9517-b4049c653cdc" class="">
+      등록 과정은 명사 탭과 동일하다. 형용사는 ‘다’ 어미를 작성하지 않고, 변형전
+      상태로 입력한다.
+    </p>
+    <figure id="b3b685c8-fda5-4407-8e00-c8ebd22cfe95" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.04.54.png"
+        ><img
+          style="width: 548px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.04.54.png"
+      /></a>
+    </figure>
+    <figure
+      class="block-color-pink_background callout"
+      style="white-space: pre-wrap; display: flex"
+      id="2cfe2325-9686-4620-878b-294c180154f1"
+    >
+      <div style="font-size: 1.5em"><span class="icon">⛔</span></div>
+      <div style="width: 100%">
+        주의사항 
+        - 영어 입력 불가 
+        - 마지막 ‘다’ 를 작성하지 말 것 (ex. 귀엽다x 귀엽o )
+        - Updated_Flag는 수정하지 말 것
+      </div>
+    </figure>
+    <h2 id="e40cbefd-ebcb-458f-bb79-7d7eb1bc9474" class="">접미사 탭</h2>
+    <figure id="e2f19ba5-dde5-44f9-b070-db840014ffe3" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.06.04.png"
+        ><img
+          style="width: 247px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.06.04.png"
+      /></a>
+    </figure>
+    <p id="ce34859c-ce94-418f-9946-3738b088eff3" class="">
+      접미사는 단어의 뒤에 붙어 한 단어가 될 수 있는 단어를 말한다.
+    </p>
+    <p id="9b440e81-a193-4401-acc3-297df7f5c1d5" class="">
+      예를들어, 불고기소스 단어는 불고기(명사), 소스(명사)로 분리될 수 있다.
+      하지만 불고기소스는 한국어에서 합성어로써 한 단어로 인식할 수 있어야한다.
+      그 중 소스는 접미사로 붙어 불고기소스, 미트소스, 머스타드소스 등으로
+      한번에 처리 하기 위해서 단어 사전에 소스(접미사)로 등록하여 한단어로
+      인식되게 할 수 있다.
+    </p>
+    <p id="a37b65e7-32c2-4211-bf6d-23a63bb6de10" class="">
+      등록과정은 명사 탭과 같다.
+    </p>
+    <figure
+      class="block-color-pink_background callout"
+      style="white-space: pre-wrap; display: flex"
+      id="8a3f50ea-6212-42f8-be80-3fa8fc1e0f88"
+    >
+      <div style="font-size: 1.5em"><span class="icon">⛔</span></div>
+      <div style="width: 100%">
+        주의사항 
+        - 영어 입력 불가 
+        - Updated_Flag는 수정하지 말 것 
+        - 무분별한 등록은 특정 케이스에서 문제가 될 수 있으므로, 확실하게 접미사 역할이 가능한 단어만 등록하도록 유의한다.
+      </div>
+    </figure>
+    <h2 id="ed4f1d57-94dd-4030-b6c3-838d10a403d0" class="">맞춤법 수정 탭</h2>
+    <figure id="c4ab35f1-accf-44fd-acec-2397ce3ea263" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.10.29.png"
+        ><img
+          style="width: 242px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.10.29.png"
+      /></a>
+    </figure>
+    <p id="e745a497-b459-433a-8193-994cb819dd94" class="">
+      맞춤법 수정 탭은, SNS 단어 특성상 오타, 외래어, 줄임말, 한국어 변형 등
+      원래의 단어로 되돌리기 위해 사용한다.
+    </p>
+    <p id="5e061569-a363-4978-89d3-90b3336ab5ca" class="">
+      그러나, 해당 단어를 원래 단어로 변형하여 저장되므로 주의가 필요하다.
+    </p>
+    <p id="e81bb29b-f1ae-4a69-9923-fe9939d31347" class="">
+      예를 들어, 외래어라서 두개의 단어로 분리되는 경우
+      <code>트레져</code> = <code>트레저</code> 로 변형하도록 입력할 수 있지만,
+      야민정음이라 불리는 <code>네넴띤</code>=<code>비빔면</code> 으로 등록하는
+      경우 → <code>네넴띤</code> 이라는 단어가 유행임에도
+      <code>비빔면</code>으로 저장되어 유행 단어를 파악할 수 없게 될 수 있으므로
+      적절한 단어 등록이 필요하다.
+    </p>
+    <figure id="92372ef1-5dda-49fa-80a3-a3bccf218f02" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.13.21.png"
+        ><img
+          style="width: 1129px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_6.13.21.png"
+      /></a>
+    </figure>
+    <figure
+      class="block-color-pink_background callout"
+      style="white-space: pre-wrap; display: flex"
+      id="2aac62cd-8392-45a3-bc19-a4bb382d8424"
+    >
+      <div style="font-size: 1.5em"><span class="icon">⛔</span></div>
+      <div style="width: 100%">
+        주의사항 
+        - 영어 입력 불가 
+        - Updated_Flag는 수정하지 말 것 
+        - 무분별한 등록은 특정 케이스에서 문제가 될 수 있으므로, 확실하게 변형을 해야만 하는 단어만 등록하도록 유의한다. 
+        - Target_typo에는 변형된 어미가 들어가지 않도록 유의해야한다. ex. 짱났엉 → 짜증났엉x 짜증났어o
+      </div>
+    </figure>
+    <p id="07a63225-6432-438f-91fb-bf896c3ef692" class=""></p>
+    <h1
+      id="030d442a-da10-4127-8b6c-77d38f90f4b3"
+      class="block-color-yellow_background"
+    >
+      #NIZ 키워드
+    </h1>
+    <h2 id="6ee479b7-a68c-4cf1-a4e9-5423b034bcbb" class="">불용어 탭</h2>
+    <figure id="24df99ff-e0e2-405a-9742-1f191c373062" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.46.14.png"
+        ><img
+          style="width: 234px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.46.14.png"
+      /></a>
+    </figure>
+    <p id="989f73d3-63c1-4358-a9d5-1925b0e001d9" class="">
+      NIZ 키워드 불용어 탭은 실시간으로 제거되어야할 단어를 입력할 때 사용된다.
+    </p>
+    <p id="b7d6825b-add3-4c6c-b161-fed823bc7b18" class="">
+      NIZ 서비스에서 보여지는 키워드 중 실시간으로 숨길 수 있는 항목
+    </p>
+    <figure id="d72519c9-1eb3-40bf-a164-9ddcfdfec6d7" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.48.33.png"
+        ><img
+          style="width: 1649px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.48.33.png"
+      /></a>
+    </figure>
+    <p id="7ddb6615-238f-45b4-b09c-95fb330eac28" class="">
+      <code>+추가</code> 버튼을 눌러서 단어 추가 페이지로 진입
+    </p>
+    <figure id="ea4dee91-3efd-48b3-bd3d-02538e02053c" class="image">
+      <a
+        href="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.49.07.png"
+        ><img
+          style="width: 523px"
+          src="static/uploads/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2022-12-27_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.49.07.png"
+      /></a>
+    </figure>
+    <p id="27e28ab6-450b-4344-920b-1f416975d275" class="">
+      숨길단어를 입력하고 <code>저장</code> 버튼을 누르면, 저장이 완료됨
+    </p>
+    <p id="59a8767c-041b-48ca-9913-6b8734c48ecf" class="">
+      <code>저장하고 새로운 작업</code> 버튼 누를 시, 저장된 후 새로운
+      입력창으로 refresh 된다.
+    </p>
+    <p id="20151efe-f400-4dda-a310-6a26c0f36a42" class=""></p>
+  </div>
+</article>
+{% endblock %}
