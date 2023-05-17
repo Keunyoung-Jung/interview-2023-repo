@@ -1,0 +1,5 @@
+{
+    "kube-context": "kubernetes-admin@kubernetes",
+    "kube-job-template-path": "kubernetes_job_template.yaml",
+    "repository-uri": "registry.mysterico.com/model-trainer/fasttext"
+}

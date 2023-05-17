@@ -1,0 +1,10 @@
+name: fasttext
+channels:
+  - defaults
+dependencies:
+  - pip
+  - pip:
+    - gensim==4.1.2
+    - mlflow
+    - boto3
+    - openpyxl==3.0.9

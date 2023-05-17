@@ -1,0 +1,11 @@
+name: fasttext
+
+docker_env: 
+  image: registry.mysterico.com/model-trainer/fasttext
+  
+entry_points:
+  main:
+    parameters:
+      model_version: {type: str,default: 'latest'}
+      excel_file: {type: str, default: 'latest.xlsx'}
+    command: "python train.py --model-version={model_version} --excel-file={excel_file}"

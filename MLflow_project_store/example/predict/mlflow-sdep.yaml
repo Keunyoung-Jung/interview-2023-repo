@@ -1,0 +1,45 @@
+apiVersion: machinelearning.seldon.io/v1alpha2
+kind: SeldonDeployment
+metadata:
+  name: mlflow-wine
+  namespace: seldon-deploy
+spec:
+  name: mlflow-wine
+  predictors:
+  - componentSpecs:
+    - spec:
+        containers:
+          - name: classifier
+            securityContext:
+              privileged: true
+              runAsUser: 0  # 패키지 실행 권한이 걸리기 때문애 root로 실행
+              runAsGroup: 0
+            livenessProbe: # 패키지 설치와 서버생성에 걸리는 시간동안 Pod가 restart 되는 것을 막습니다.
+              initialDelaySeconds: 80
+              failureThreshold: 200
+              periodSeconds: 5
+              successThreshold: 1
+              httpGet:
+                path: /health/ping
+                port: http
+                scheme: HTTP
+            readinessProbe:
+              initialDelaySeconds: 80
+              failureThreshold: 200
+              periodSeconds: 5
+              successThreshold: 1
+              httpGet:
+                path: /health/ping
+                port: http
+                scheme: HTTP
+        nodeSelector: # 노드는 gpu가 있는 노드로 할당합니다.
+          gpu: "true"
+    graph:
+      children: []
+      implementation: MLFLOW_SERVER
+      modelUri: s3://mysterico-model-store/mlflow/artifacts/0/6a0e3c079acf4624b12635b318aa82c2/artifacts/model #배포할 모델 URI를 작성
+      envSecretRefName: seldon-init-container-secret
+      storageInitializerImage: gcr.io/kfserving/storage-initializer:v0.4.0
+      name: classifier
+    name: default
+    replicas: 1

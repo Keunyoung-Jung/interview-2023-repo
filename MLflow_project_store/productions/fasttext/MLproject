@@ -1,0 +1,10 @@
+name: fasttext
+
+conda_env: conda.yaml
+  
+entry_points:
+  main:
+    parameters:
+      model_version: {type: str,default: 'latest'}
+      excel_file: {type: str, default: 'latest.xlsx'}
+    command: "python train.py --model-version={model_version} --excel-file={excel_file}"

@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{replaced with MLflow Project name}"
+  namespace: mlflow
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 0
+  template:
+    spec:
+      volumes:
+        - name: model-volume
+          hostPath:
+            path: /hdd_disk/mlflow/model/fasttext
+      containers:
+      - name: "{replaced with MLflow Project name}"
+        image: "{replaced with URI of Docker image created during Project execution}"
+        command: ["{replaced with MLflow Project entry point command}"]
+        resources:
+          limits:
+            memory: 80G
+          requests:
+            memory: 30G
+        volumeMounts:
+          - mountPath: /mlflow/projects/code/model
+            name: model-volume
+        nodeSelector: 
+          role: mlflow
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: http://k8s.mysterico.com:31164
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-server-s3-secret
+              key: accessKeyId
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-server-s3-secret
+              key: secretAccessKey
+        - name: AWS_DEFAULT_REGION
+          value: ap-northeast-2
+      restartPolicy: Never

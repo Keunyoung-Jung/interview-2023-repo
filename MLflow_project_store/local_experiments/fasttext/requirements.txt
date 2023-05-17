@@ -1,0 +1,5 @@
+gensim==4.1.2
+openpyxl==3.0.9
+mlflow
+kubernetes
+boto3
